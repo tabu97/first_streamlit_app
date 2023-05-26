@@ -27,22 +27,20 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 streamlit.dataframe(fruits_to_show)
 
 streamlit.header("Fruityvice Fruit Advice!")
-fruit_choice = streamlit.text_input('What fruit would you like information about?','Kiwi')
-streamlit.write('The user entered ', fruit_choice)
-
-#import requests
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/"+ fruit_choice)
-
-
-#Let's removed the line of raw JSON, and separate the base URL from the fruit name (which will make it easier to use a variable there).
-# streamlit.text(fruityvice_response.json())
-
-
-# take the json version of the response and normalize it
-fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-# display it on screen
-streamlit.dataframe(fruityvice_normalized)
-
+try:
+  fruit_choice = streamlit.text_input('What fruit would you like information about?')
+  if not fruit_choice:
+    streamlit.error("Please select a fruit to get information.")
+  else:
+    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/"+ fruit_choice)
+    fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+    streamlit.dataframe(fruityvice_normalized)
+    
+except URLError as e:
+  streamlit.error()
+  
+    
+ 
 # dont run past we troubleshoot
 streamlit.stop()
 #import snowflake.connector
